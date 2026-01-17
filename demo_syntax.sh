@@ -28,4 +28,4 @@ echo "========================================================================"
 echo ""
 
 # Run the quick demo
-python examples/quick_llm_demo.py
+uv run python examples/quick_llm_demo.py

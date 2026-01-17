@@ -78,7 +78,7 @@ To see syntax highlighting in action:
 ./demo_syntax.sh
 
 # Or directly
-python examples/quick_llm_demo.py
+uv run python examples/quick_llm_demo.py
 ```
 
 Then ask: **"Show me Python code using show_code_example"**

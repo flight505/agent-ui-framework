@@ -36,7 +36,7 @@ make build-tui
 The fastest way to test real LLM integration:
 
 ```bash
-python examples/quick_llm_demo.py
+uv run python examples/quick_llm_demo.py
 ```
 
 ### What This Tests
@@ -78,7 +78,7 @@ Explain async/await in Python
 For testing all UI primitives:
 
 ```bash
-python examples/llm_integration_test.py
+uv run python examples/llm_integration_test.py
 ```
 
 ### Features Tested
@@ -176,7 +176,7 @@ When forms/tools appear:
 # Change: theme="charm-dark"
 # To: theme="charm-light"
 
-python examples/quick_llm_demo.py
+uv run python examples/quick_llm_demo.py
 ```
 
 Look for:
@@ -190,7 +190,7 @@ Look for:
 ```bash
 # Change: theme="charm-auto"
 
-python examples/quick_llm_demo.py
+uv run python examples/quick_llm_demo.py
 ```
 
 Should adapt to your terminal's background automatically.
@@ -198,7 +198,7 @@ Should adapt to your terminal's background automatically.
 ### Custom Theme (JSON)
 
 ```bash
-AGENTUI_THEME=themes/cyberpunk.json python examples/quick_llm_demo.py
+AGENTUI_THEME=themes/cyberpunk.json uv run python examples/quick_llm_demo.py
 ```
 
 Tests the JSON theme loader.
