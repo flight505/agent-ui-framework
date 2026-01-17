@@ -14,6 +14,7 @@ import (
 
 	"github.com/flight505/agentui/internal/protocol"
 	"github.com/flight505/agentui/internal/theme"
+	"github.com/flight505/agentui/internal/ui/animations"
 	"github.com/flight505/agentui/internal/ui/components"
 	"github.com/flight505/agentui/internal/ui/views"
 )
@@ -101,6 +102,11 @@ type Model struct {
 	appName    string
 	appTagline string
 
+	// Animations (spring physics for smooth transitions)
+	modalOpacity   *animations.OpacitySpring
+	modalPosition  *animations.PositionSpring
+	animating      bool
+
 	// Debug mode
 	debugMode bool
 }
@@ -122,19 +128,30 @@ func NewModel(handler *protocol.Handler, appName, tagline string) Model {
 	s.Spinner = spinner.Dot
 	s.Style = theme.Current.Styles.Spinner
 
+	// Animations (200-300ms for Charm aesthetic)
+	springConfig := animations.DefaultSpringConfig()
+	modalOpacity := animations.NewOpacitySpring(springConfig)
+	modalPosition := animations.NewPositionSpring(springConfig)
+
+	// Start with modal hidden
+	modalOpacity.SetOpacity(0.0)
+
 	return Model{
-		handler:      handler,
-		state:        StateChat,
-		input:        ti,
-		spinner:      s,
-		messages:     []Message{},
-		appName:      appName,
-		appTagline:   tagline,
-		markdownView: views.NewMarkdownView(),
-		tableView:    views.NewTableView(),
-		codeView:     views.NewCodeView(),
-		progressView: views.NewProgressView(),
-		alertView:    views.NewAlertView(),
+		handler:       handler,
+		state:         StateChat,
+		input:         ti,
+		spinner:       s,
+		messages:      []Message{},
+		appName:       appName,
+		appTagline:    tagline,
+		markdownView:  views.NewMarkdownView(),
+		tableView:     views.NewTableView(),
+		codeView:      views.NewCodeView(),
+		progressView:  views.NewProgressView(),
+		alertView:     views.NewAlertView(),
+		modalOpacity:  modalOpacity,
+		modalPosition: modalPosition,
+		animating:     false,
 	}
 }
 
@@ -261,6 +278,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		var cmd tea.Cmd
 		m.spinner, cmd = m.spinner.Update(msg)
 		cmds = append(cmds, cmd)
+
+	case animations.TickMsg:
+		// Update spring animations
+		opacityActive := m.modalOpacity.Update()
+		positionActive := m.modalPosition.Update()
+
+		// Continue animation if springs are still moving
+		if opacityActive || positionActive {
+			m.animating = true
+			cmds = append(cmds, animations.TickCmd())
+		} else {
+			m.animating = false
+		}
 	}
 
 	// Update components based on state
@@ -507,6 +537,11 @@ func (m Model) handleProtocolMsg(msg *protocol.Message) (tea.Model, tea.Cmd) {
 		m.currentFormID = msg.ID
 		m.state = StateForm
 
+		// Animate modal in (fade + position)
+		m.modalOpacity.FadeIn()
+		m.modalPosition.SetTarget(0, float64(m.height/6)) // Slide from top
+		return m, animations.TickCmd() // Start animation
+
 	case protocol.TypeConfirm:
 		var payload protocol.ConfirmPayload
 		if err := msg.ParsePayload(&payload); err != nil {
@@ -517,6 +552,11 @@ func (m Model) handleProtocolMsg(msg *protocol.Message) (tea.Model, tea.Cmd) {
 		m.currentConfirm.SetWidth(m.width)
 		m.currentConfirmID = msg.ID
 		m.state = StateConfirm
+
+		// Animate modal in
+		m.modalOpacity.FadeIn()
+		m.modalPosition.SetTarget(0, float64(m.height/6))
+		return m, animations.TickCmd()
 
 	case protocol.TypeSelect:
 		var payload protocol.SelectPayload

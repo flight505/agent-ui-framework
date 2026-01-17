@@ -2,9 +2,14 @@
 package views
 
 import (
+	"bytes"
 	"strconv"
 	"strings"
 
+	"github.com/alecthomas/chroma/v2"
+	"github.com/alecthomas/chroma/v2/formatters"
+	"github.com/alecthomas/chroma/v2/lexers"
+	"github.com/alecthomas/chroma/v2/styles"
 	"github.com/charmbracelet/glamour"
 	"github.com/charmbracelet/lipgloss"
 
@@ -364,7 +369,7 @@ func (c *CodeView) SetWidth(width int) {
 	c.width = width
 }
 
-// View renders the code block.
+// View renders the code block with syntax highlighting.
 func (c *CodeView) View() string {
 	styles := theme.Current.Styles
 	colors := theme.Current.Colors
@@ -376,29 +381,31 @@ func (c *CodeView) View() string {
 		sb.WriteString("\n")
 	}
 
-	// Code content with line numbers
-	lines := strings.Split(c.code, "\n")
-	maxLineNum := len(lines)
-	lineNumWidth := len(strconv.Itoa(maxLineNum))
+	// Get syntax highlighted code
+	highlighted := c.highlightCode()
 
-	lineNumStyle := lipgloss.NewStyle().
-		Foreground(colors.TextDim).
-		Width(lineNumWidth).
-		Align(lipgloss.Right)
-
-	codeStyle := lipgloss.NewStyle().
-		Foreground(colors.Text)
-
+	// Add line numbers if enabled
 	var codeContent strings.Builder
-	for i, line := range lines {
-		if c.lineNumbers {
+	if c.lineNumbers {
+		lines := strings.Split(highlighted, "\n")
+		maxLineNum := len(lines)
+		lineNumWidth := len(strconv.Itoa(maxLineNum))
+
+		lineNumStyle := lipgloss.NewStyle().
+			Foreground(colors.TextDim).
+			Width(lineNumWidth).
+			Align(lipgloss.Right)
+
+		for i, line := range lines {
 			codeContent.WriteString(lineNumStyle.Render(strconv.Itoa(i + 1)))
 			codeContent.WriteString(" │ ")
+			codeContent.WriteString(line)
+			if i < len(lines)-1 {
+				codeContent.WriteString("\n")
+			}
 		}
-		codeContent.WriteString(codeStyle.Render(line))
-		if i < len(lines)-1 {
-			codeContent.WriteString("\n")
-		}
+	} else {
+		codeContent.WriteString(highlighted)
 	}
 
 	// Wrap in container
@@ -410,6 +417,49 @@ func (c *CodeView) View() string {
 	sb.WriteString(containerStyle.Render(codeContent.String()))
 
 	return sb.String()
+}
+
+// highlightCode applies syntax highlighting using Chroma.
+func (c *CodeView) highlightCode() string {
+	// Register custom Charm style
+	styles.Register(BuildChromaStyle())
+
+	// Get lexer for the language
+	var lexer chroma.Lexer
+	if c.language != "" {
+		lexer = lexers.Get(c.language)
+	}
+	if lexer == nil {
+		lexer = lexers.Fallback
+	}
+
+	// Use terminal256 formatter for ANSI color output
+	formatter := formatters.Get("terminal256")
+	if formatter == nil {
+		formatter = formatters.Fallback
+	}
+
+	// Get our custom Charm style
+	style := styles.Get("charm")
+	if style == nil {
+		style = styles.Fallback
+	}
+
+	// Tokenize and format
+	iterator, err := lexer.Tokenise(nil, c.code)
+	if err != nil {
+		// Fallback to plain text
+		return c.code
+	}
+
+	var buf bytes.Buffer
+	err = formatter.Format(&buf, style, iterator)
+	if err != nil {
+		// Fallback to plain text
+		return c.code
+	}
+
+	return buf.String()
 }
 
 // ProgressView renders a progress indicator.
