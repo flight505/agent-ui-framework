@@ -1,0 +1,24 @@
+{
+  "id": "cyberpunk",
+  "name": "Cyberpunk",
+  "description": "Neon-drenched night city vibes - hot pink, cyan, and deep purple",
+  "author": "Community",
+  "version": "1.0.0",
+  "colors": {
+    "primary": "#ff00ff",
+    "secondary": "#00ffff",
+    "background": "#0a0a12",
+    "surface": "#1a1a2e",
+    "overlay": "#2a2a42",
+    "text": "#ffffff",
+    "textMuted": "#8b8ba7",
+    "textDim": "#5a5a7a",
+    "success": "#00ff9f",
+    "warning": "#ffff00",
+    "error": "#ff0055",
+    "info": "#00ffff",
+    "accent1": "#ff00ff",
+    "accent2": "#00ffff",
+    "accent3": "#ffff00"
+  }
+}

@@ -2,6 +2,7 @@
 package views
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/charmbracelet/glamour"
@@ -49,25 +50,14 @@ func (m *MarkdownView) getRenderer() *glamour.TermRenderer {
 		width = 80
 	}
 
-	// Create renderer with theme-appropriate style
-	style := glamour.DarkStyleConfig
-	colors := theme.Current.Colors
-
-	// Customize some colors
-	style.Document.Color = (*string)(nil)
-	style.H1.Color = stringPtr(string(colors.Primary))
-	style.H2.Color = stringPtr(string(colors.Primary))
-	style.H3.Color = stringPtr(string(colors.Secondary))
-	style.Link.Color = stringPtr(string(colors.Info))
-	style.Code.Color = stringPtr(string(colors.Accent1))
-	style.CodeBlock.Chroma.Text.Color = stringPtr(string(colors.Text))
-
+	// Create renderer with dark style
+	// TODO: Customize colors to match theme once we have color conversion helper
 	r, err := glamour.NewTermRenderer(
-		glamour.WithStyles(style),
+		glamour.WithStandardStyle("dark"),
 		glamour.WithWordWrap(width-4),
 	)
 	if err != nil {
-		// Fallback to default
+		// Fallback to auto style
 		r, _ = glamour.NewTermRenderer(
 			glamour.WithAutoStyle(),
 			glamour.WithWordWrap(width-4),
@@ -389,7 +379,7 @@ func (c *CodeView) View() string {
 	// Code content with line numbers
 	lines := strings.Split(c.code, "\n")
 	maxLineNum := len(lines)
-	lineNumWidth := len(strings.Itoa(maxLineNum))
+	lineNumWidth := len(strconv.Itoa(maxLineNum))
 
 	lineNumStyle := lipgloss.NewStyle().
 		Foreground(colors.TextDim).
@@ -402,7 +392,7 @@ func (c *CodeView) View() string {
 	var codeContent strings.Builder
 	for i, line := range lines {
 		if c.lineNumbers {
-			codeContent.WriteString(lineNumStyle.Render(strings.Itoa(i + 1)))
+			codeContent.WriteString(lineNumStyle.Render(strconv.Itoa(i + 1)))
 			codeContent.WriteString(" │ ")
 		}
 		codeContent.WriteString(codeStyle.Render(line))
@@ -499,7 +489,7 @@ func (p *ProgressView) View() string {
 
 		sb.WriteString(bar)
 		sb.WriteString(" ")
-		sb.WriteString(percentStyle.Render(strings.Itoa(int(p.percent)) + "%"))
+		sb.WriteString(percentStyle.Render(strconv.Itoa(int(p.percent)) + "%"))
 		sb.WriteString("\n")
 	}
 

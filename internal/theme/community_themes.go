@@ -2,6 +2,22 @@ package theme
 
 import "github.com/charmbracelet/lipgloss"
 
+// Community themes - these are popular terminal color schemes
+// that users can opt-in to. They are not loaded by default.
+//
+// To enable these themes, import this file and call RegisterCommunityThemes()
+// or load them from JSON files in the themes/ directory.
+
+// RegisterCommunityThemes registers all community themes with the registry.
+// Call this if you want to use community themes like Catppuccin, Dracula, etc.
+func RegisterCommunityThemes() {
+	Register(&CatppuccinMocha)
+	Register(&CatppuccinLatte)
+	Register(&Dracula)
+	Register(&Nord)
+	Register(&TokyoNight)
+}
+
 // Catppuccin Mocha - dark theme
 var catppuccinMochaColors = Colors{
 	// Core
@@ -30,9 +46,13 @@ var catppuccinMochaColors = Colors{
 
 // CatppuccinMocha is the dark Catppuccin theme.
 var CatppuccinMocha = Theme{
-	Name:   "Catppuccin Mocha",
-	Colors: catppuccinMochaColors,
-	Styles: BuildStyles(catppuccinMochaColors),
+	ID:          "catppuccin-mocha",
+	Name:        "Catppuccin Mocha",
+	Description: "Soothing pastel theme - dark variant",
+	Author:      "Catppuccin",
+	Version:     "1.0.0",
+	Colors:      catppuccinMochaColors,
+	Styles:      BuildStyles(catppuccinMochaColors),
 }
 
 // Catppuccin Latte - light theme
@@ -63,9 +83,13 @@ var catppuccinLatteColors = Colors{
 
 // CatppuccinLatte is the light Catppuccin theme.
 var CatppuccinLatte = Theme{
-	Name:   "Catppuccin Latte",
-	Colors: catppuccinLatteColors,
-	Styles: BuildStyles(catppuccinLatteColors),
+	ID:          "catppuccin-latte",
+	Name:        "Catppuccin Latte",
+	Description: "Soothing pastel theme - light variant",
+	Author:      "Catppuccin",
+	Version:     "1.0.0",
+	Colors:      catppuccinLatteColors,
+	Styles:      BuildStyles(catppuccinLatteColors),
 }
 
 // Dracula theme
@@ -92,9 +116,13 @@ var draculaColors = Colors{
 
 // Dracula is the Dracula theme.
 var Dracula = Theme{
-	Name:   "Dracula",
-	Colors: draculaColors,
-	Styles: BuildStyles(draculaColors),
+	ID:          "dracula",
+	Name:        "Dracula",
+	Description: "Dark theme with vibrant colors",
+	Author:      "Dracula Theme",
+	Version:     "1.0.0",
+	Colors:      draculaColors,
+	Styles:      BuildStyles(draculaColors),
 }
 
 // Nord theme
@@ -121,9 +149,13 @@ var nordColors = Colors{
 
 // Nord is the Nord theme.
 var Nord = Theme{
-	Name:   "Nord",
-	Colors: nordColors,
-	Styles: BuildStyles(nordColors),
+	ID:          "nord",
+	Name:        "Nord",
+	Description: "Arctic, north-bluish color palette",
+	Author:      "Arctic Ice Studio",
+	Version:     "1.0.0",
+	Colors:      nordColors,
+	Styles:      BuildStyles(nordColors),
 }
 
 // Tokyo Night theme
@@ -150,7 +182,11 @@ var tokyoNightColors = Colors{
 
 // TokyoNight is the Tokyo Night theme.
 var TokyoNight = Theme{
-	Name:   "Tokyo Night",
-	Colors: tokyoNightColors,
-	Styles: BuildStyles(tokyoNightColors),
+	ID:          "tokyo-night",
+	Name:        "Tokyo Night",
+	Description: "A clean dark theme inspired by Tokyo at night",
+	Author:      "Folke Lemaitre",
+	Version:     "1.0.0",
+	Colors:      tokyoNightColors,
+	Styles:      BuildStyles(tokyoNightColors),
 }
