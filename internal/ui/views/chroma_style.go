@@ -97,28 +97,37 @@ func BuildChromaStyle() *chroma.Style {
 	})
 }
 
-// toChromaColor converts a lipgloss TerminalColor to a Chroma color string.
-// This is a simplified conversion that works for basic Color types.
+// toChromaColor converts a lipgloss TerminalColor to a Chroma-compatible hex color string.
+// Chroma requires hex colors (e.g., "#FF00FF"), not ANSI codes.
 func toChromaColor(c lipgloss.TerminalColor) string {
-	// If it's a simple lipgloss.Color (string), return it
+	// If it's a simple lipgloss.Color (string), check if it's hex or ANSI
 	if color, ok := c.(lipgloss.Color); ok {
-		return string(color)
+		colorStr := string(color)
+		// If it starts with #, it's already hex
+		if len(colorStr) > 0 && colorStr[0] == '#' {
+			return colorStr
+		}
+		// Otherwise it's an ANSI code, convert to hex
+		return ansi256ToHex(colorStr)
 	}
 
 	// For AdaptiveColor, use the dark variant
 	if adaptive, ok := c.(lipgloss.AdaptiveColor); ok {
-		return adaptive.Dark
+		if len(adaptive.Dark) > 0 && adaptive.Dark[0] == '#' {
+			return adaptive.Dark
+		}
+		return ansi256ToHex(adaptive.Dark)
 	}
 
-	// For CompleteColor, use TrueColor if available, otherwise ANSI256
+	// For CompleteColor, prefer TrueColor
 	if complete, ok := c.(lipgloss.CompleteColor); ok {
 		if complete.TrueColor != "" {
 			return complete.TrueColor
 		}
 		if complete.ANSI256 != "" {
-			return complete.ANSI256
+			return ansi256ToHex(complete.ANSI256)
 		}
-		return complete.ANSI
+		return ansi256ToHex(complete.ANSI)
 	}
 
 	// For CompleteAdaptiveColor, use dark TrueColor
@@ -127,11 +136,34 @@ func toChromaColor(c lipgloss.TerminalColor) string {
 			return completeAdaptive.Dark.TrueColor
 		}
 		if completeAdaptive.Dark.ANSI256 != "" {
-			return completeAdaptive.Dark.ANSI256
+			return ansi256ToHex(completeAdaptive.Dark.ANSI256)
 		}
-		return completeAdaptive.Dark.ANSI
+		return ansi256ToHex(completeAdaptive.Dark.ANSI)
 	}
 
 	// Fallback
 	return "#FFFFFF"
+}
+
+// ansi256ToHex converts ANSI 256 color codes to approximate hex values.
+// This is a simplified mapping for common CharmDark colors.
+func ansi256ToHex(ansiCode string) string {
+	// Map of common ANSI codes to hex colors
+	ansiMap := map[string]string{
+		"212": "#FF87D7", // Pink (CharmPink)
+		"35":  "#00AF5F", // Teal (CharmTeal)
+		"99":  "#875FFF", // Violet (CharmViolet)
+		"63":  "#5F5FFF", // Indigo (CharmIndigo)
+		"8":   "#808080", // Gray
+		"7":   "#C0C0C0", // Light gray
+		"0":   "#000000", // Black
+		"15":  "#FFFFFF", // White
+	}
+
+	if hex, ok := ansiMap[ansiCode]; ok {
+		return hex
+	}
+
+	// If no mapping, return a neutral gray
+	return "#888888"
 }
