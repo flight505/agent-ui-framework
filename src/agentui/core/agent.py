@@ -282,6 +282,7 @@ class AgentCore:
 
     async def _send_initial_status(self) -> None:
         """Send initial ready status to bridge."""
+        assert self.bridge is not None, "Bridge must be set before sending status"
         try:
             await self.bridge.send_status(
                 f"Ready · {self.config.provider.value}",
@@ -307,6 +308,8 @@ class AgentCore:
 
     async def _handle_input_event(self, event) -> None:
         """Handle user input event."""
+        assert self.bridge is not None, "Bridge must be set before handling input"
+        bridge = self.bridge  # Local variable for type safety
         user_input = event.payload.get("content", "")
         if not user_input:
             return
@@ -316,19 +319,19 @@ class AgentCore:
         try:
             async for chunk in self.process_message(user_input):
                 if chunk.content:
-                    await self.bridge.send_text(
+                    await bridge.send_text(
                         chunk.content,
                         done=chunk.is_complete,
                     )
 
                 if chunk.is_complete:
-                    await self.bridge.send_status(
+                    await bridge.send_status(
                         f"Ready · {self.config.provider.value}",
                         input_tokens=self.state.total_input_tokens,
                         output_tokens=self.state.total_output_tokens,
                     )
 
-            await self.bridge.send_done()
+            await bridge.send_done()
 
         except BridgeError as e:
             logger.error(f"Bridge error while processing: {e}")
@@ -338,6 +341,8 @@ class AgentCore:
 
     async def _send_error_alert(self, error: Exception) -> None:
         """Send error alert to bridge, ignoring bridge errors."""
+        if not self.bridge:
+            return
         try:
             await self.bridge.send_alert(
                 str(error),

@@ -5,7 +5,6 @@ Handles LLM response streaming, tool call collection, and message state manageme
 """
 
 import logging
-from collections.abc import AsyncIterator
 from typing import Any
 
 from agentui.types import AgentState, Message, StreamChunk

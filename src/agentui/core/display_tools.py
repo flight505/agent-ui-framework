@@ -90,23 +90,27 @@ class DisplayToolRegistry:
 
     async def _execute_display_message(self, msg_type: str, kwargs: dict):
         """Execute a display message based on type."""
+        bridge = self.bridge
+        if not bridge:
+            raise RuntimeError("Bridge not available for display messages")
+
         # Interactive messages that return data
         if msg_type == "form":
-            return await self.bridge.request_form(
+            return await bridge.request_form(
                 fields=kwargs.get("fields", []),
                 title=kwargs.get("title"),
                 description=kwargs.get("description"),
             )
 
         if msg_type == "confirm":
-            return await self.bridge.request_confirm(
+            return await bridge.request_confirm(
                 message=kwargs["message"],
                 title=kwargs.get("title"),
                 destructive=kwargs.get("destructive", False),
             )
 
         if msg_type == "select":
-            return await self.bridge.request_select(
+            return await bridge.request_select(
                 label=kwargs["label"],
                 options=kwargs["options"],
                 default=kwargs.get("default"),
@@ -114,7 +118,7 @@ class DisplayToolRegistry:
 
         # Non-interactive display messages
         if msg_type == "table":
-            await self.bridge.send_table(
+            await bridge.send_table(
                 columns=kwargs["columns"],
                 rows=kwargs["rows"],
                 title=kwargs.get("title"),
@@ -123,7 +127,7 @@ class DisplayToolRegistry:
             return f"Displayed table: {kwargs.get('title', 'Table')}"
 
         if msg_type == "code":
-            await self.bridge.send_code(
+            await bridge.send_code(
                 code=kwargs["code"],
                 language=kwargs.get("language", "text"),
                 title=kwargs.get("title"),
@@ -131,7 +135,7 @@ class DisplayToolRegistry:
             return f"Displayed code: {kwargs.get('title', 'Code')}"
 
         if msg_type == "progress":
-            await self.bridge.send_progress(
+            await bridge.send_progress(
                 message=kwargs["message"],
                 percent=kwargs.get("percent"),
                 steps=kwargs.get("steps"),
@@ -139,7 +143,7 @@ class DisplayToolRegistry:
             return f"Displayed progress: {kwargs['message']}"
 
         if msg_type == "alert":
-            await self.bridge.send_alert(
+            await bridge.send_alert(
                 message=kwargs["message"],
                 severity=kwargs.get("severity", "info"),
                 title=kwargs.get("title"),
