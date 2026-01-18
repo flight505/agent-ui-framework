@@ -5,8 +5,12 @@ import "github.com/charmbracelet/lipgloss"
 // Community themes - these are popular terminal color schemes
 // that users can opt-in to. They are not loaded by default.
 //
-// To enable these themes, import this file and call RegisterCommunityThemes()
-// or load them from JSON files in the themes/ directory.
+// DEPRECATED: These Go-based themes are maintained for backward compatibility.
+// New themes should be created as JSON files in the themes/ directory instead.
+// See themes/README.md for how to create JSON themes.
+//
+// To enable these themes, call RegisterCommunityThemes() or better yet,
+// load them from JSON files in the themes/ directory using LoadThemeFromFile().
 
 // RegisterCommunityThemes registers all community themes with the registry.
 // Call this if you want to use community themes like Catppuccin, Dracula, etc.

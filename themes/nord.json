@@ -1,0 +1,24 @@
+{
+  "id": "nord",
+  "name": "Nord",
+  "description": "Arctic, north-bluish color palette",
+  "author": "Arctic Ice Studio",
+  "version": "1.0.0",
+  "colors": {
+    "primary": "#88c0d0",
+    "secondary": "#81a1c1",
+    "background": "#2e3440",
+    "surface": "#3b4252",
+    "overlay": "#434c5e",
+    "text": "#eceff4",
+    "textMuted": "#d8dee9",
+    "textDim": "#4c566a",
+    "success": "#a3be8c",
+    "warning": "#ebcb8b",
+    "error": "#bf616a",
+    "info": "#5e81ac",
+    "accent1": "#8fbcbb",
+    "accent2": "#d08770",
+    "accent3": "#b48ead"
+  }
+}

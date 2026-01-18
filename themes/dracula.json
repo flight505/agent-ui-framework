@@ -1,0 +1,24 @@
+{
+  "id": "dracula",
+  "name": "Dracula",
+  "description": "Dark theme with vibrant colors",
+  "author": "Dracula Theme",
+  "version": "1.0.0",
+  "colors": {
+    "primary": "#bd93f9",
+    "secondary": "#ff79c6",
+    "background": "#282a36",
+    "surface": "#44475a",
+    "overlay": "#6272a4",
+    "text": "#f8f8f2",
+    "textMuted": "#6272a4",
+    "textDim": "#44475a",
+    "success": "#50fa7b",
+    "warning": "#f1fa8c",
+    "error": "#ff5555",
+    "info": "#8be9fd",
+    "accent1": "#8be9fd",
+    "accent2": "#ffb86c",
+    "accent3": "#ff79c6"
+  }
+}

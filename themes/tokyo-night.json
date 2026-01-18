@@ -1,0 +1,24 @@
+{
+  "id": "tokyo-night",
+  "name": "Tokyo Night",
+  "description": "A clean dark theme inspired by Tokyo at night",
+  "author": "Folke Lemaitre",
+  "version": "1.0.0",
+  "colors": {
+    "primary": "#7aa2f7",
+    "secondary": "#bb9af7",
+    "background": "#1a1b26",
+    "surface": "#24283b",
+    "overlay": "#414868",
+    "text": "#c0caf5",
+    "textMuted": "#a9b1d6",
+    "textDim": "#565f89",
+    "success": "#9ece6a",
+    "warning": "#e0af68",
+    "error": "#f7768e",
+    "info": "#7dcfff",
+    "accent1": "#73daca",
+    "accent2": "#ff9e64",
+    "accent3": "#f7768e"
+  }
+}

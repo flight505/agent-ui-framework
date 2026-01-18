@@ -73,8 +73,17 @@ Colors can be specified as:
 
 ## Community Themes
 
+These themes are available as JSON files in this directory. To use them, either:
+1. Load them via `--theme <theme-id>` flag (if registered)
+2. Point to the JSON file: `AGENTUI_THEME=./themes/<theme>.json`
+
 | ID | Name | Author | Description |
 |----|------|--------|-------------|
+| `catppuccin-mocha` | Catppuccin Mocha | Catppuccin | Soothing pastel theme - dark variant |
+| `catppuccin-latte` | Catppuccin Latte | Catppuccin | Soothing pastel theme - light variant |
+| `dracula` | Dracula | Dracula Theme | Dark theme with vibrant colors |
+| `nord` | Nord | Arctic Ice Studio | Arctic, north-bluish color palette |
+| `tokyo-night` | Tokyo Night | Folke Lemaitre | Clean dark theme inspired by Tokyo at night |
 | `cyberpunk` | Cyberpunk | Community | Neon night city vibes |
 
 ## Contributing

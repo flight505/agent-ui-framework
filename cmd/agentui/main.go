@@ -22,7 +22,7 @@ var (
 
 func main() {
 	// Command line flags
-	themeName := flag.String("theme", "catppuccin-mocha", "Color theme")
+	themeName := flag.String("theme", "charm-dark", "Color theme")
 	appName := flag.String("name", "AgentUI", "Application name")
 	tagline := flag.String("tagline", "AI Agent Interface", "Application tagline")
 	showVersion := flag.Bool("version", false, "Show version")
