@@ -79,7 +79,7 @@ class CLIRenderer(Renderer):
             from rich.progress import Progress, SpinnerColumn, TextColumn
             from rich.prompt import Prompt, Confirm
         except ImportError:
-            raise ImportError("rich package required: pip install rich")
+            raise ImportError("rich package required: uv add rich")
         
         self.console = Console()
         self._text_buffer = ""

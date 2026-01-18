@@ -34,7 +34,7 @@ class ClaudeProvider:
             except ImportError:
                 raise ImportError(
                     "anthropic package not installed. "
-                    "Install with: pip install anthropic"
+                    "Install with: uv sync --extra claude  (or: uv add anthropic)"
                 )
             
             if not self.api_key:

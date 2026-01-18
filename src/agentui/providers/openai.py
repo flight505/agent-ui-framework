@@ -35,7 +35,7 @@ class OpenAIProvider:
             except ImportError:
                 raise ImportError(
                     "openai package not installed. "
-                    "Install with: pip install openai"
+                    "Install with: uv sync --extra openai  (or: uv add openai)"
                 )
             
             if not self.api_key:

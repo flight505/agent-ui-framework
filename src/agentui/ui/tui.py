@@ -429,7 +429,7 @@ def create_tui_app(title: str = "AgentUI", css: str | None = None):
         from textual.containers import Container, Vertical, Horizontal, ScrollableContainer
         from textual.screen import ModalScreen
     except ImportError:
-        raise ImportError("textual package required: pip install textual")
+        raise ImportError("textual package required: uv add textual")
     
     class AgentTUIApp(App):
         """Main TUI application for AgentUI."""
