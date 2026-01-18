@@ -40,7 +40,7 @@ async def test_basic_communication():
     config = TUIConfig(
         app_name="E2E Test",
         tagline="Testing communication",
-        theme="catppuccin-mocha",
+        theme="charm-dark",
         debug=True,
     )
     

@@ -41,7 +41,7 @@ Use the available tools to help users:
 - calculate: Perform calculations
 
 Always be friendly and concise. When you use a tool, explain what you found.""",
-    theme="catppuccin-mocha",
+    theme="charm-dark",
     tagline="Weather & Calculator",
     debug=False,  # Set to True for verbose logging
 )

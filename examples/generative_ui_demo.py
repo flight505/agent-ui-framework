@@ -39,7 +39,7 @@ You have several tools that return rich UI elements:
 
 Use these tools when the user asks to see demos of the UI elements.
 Be creative and show off the beautiful interfaces!""",
-    theme="catppuccin-mocha",
+    theme="charm-dark",
     tagline="UI Primitives Demo",
 )
 
