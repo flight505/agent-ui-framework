@@ -3,7 +3,7 @@ Tests for LLM providers (Claude and OpenAI).
 """
 
 import json
-from unittest.mock import AsyncMock, MagicMock, Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
@@ -437,6 +437,7 @@ class TestClaudeProviderEventHandling:
 
             result = provider._handle_content_block_stop(tool_state)
 
+            assert result is not None
             assert result == {
                 "type": "tool_use",
                 "id": "tool_123",
@@ -469,6 +470,7 @@ class TestClaudeProviderEventHandling:
             result = provider._handle_content_block_stop(tool_state)
 
             # Should return empty dict for invalid JSON
+            assert result is not None
             assert result["input"] == {}
 
 
