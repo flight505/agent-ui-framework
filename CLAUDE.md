@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+**IMPORTANT**: This file contains project-specific instructions, architecture details, development workflows, and technical constraints for Claude. Keep this file updated as the project evolves. User-facing documentation (installation, usage examples, API guides) belongs in README.md.
+
 ## Project Overview
 
 AgentUI is a hybrid Go/Python framework for building beautiful AI agent applications with Charm-quality TUIs. It uses a split-process architecture where a Go TUI (Bubbletea) handles rendering and a Python process manages LLM interactions.
@@ -17,6 +19,8 @@ AgentUI is a hybrid Go/Python framework for building beautiful AI agent applicat
 - **Python**: 3.11+ (agent runtime, LLM providers, skill system)
 - **Go**: 1.22+ (TUI built with Charm libraries)
 - **Charm libraries**: Bubbletea (TUI framework), Lip Gloss (styling), Glamour (markdown), Bubbles (components)
+- **Chroma v2**: Syntax highlighting engine with 8x output size increase via ANSI codes
+- **Testing**: pytest with ComponentTester framework for isolated UI component testing
 
 ## Development Commands
 
@@ -32,6 +36,9 @@ uv run pytest tests/ -v
 # Run specific test
 uv run pytest tests/test_protocol.py::test_name -v
 
+# Run ComponentTester tests (UI component testing)
+uv run pytest tests/test_component_tester.py -v
+
 # Lint and format
 uv run ruff check src/ tests/ examples/
 uv run ruff format src/ tests/ examples/
@@ -44,6 +51,10 @@ uv run mypy src/
 ```bash
 # Build TUI binary
 make build-tui
+
+# Test headless mode (for automated testing)
+echo '{"type":"code","payload":{"language":"python","code":"def hello(): pass","title":"Test"}}' | \
+  ./bin/agentui-tui --headless --theme charm-dark
 
 # Run Go tests
 make test-go
@@ -83,6 +94,10 @@ uv run python examples/generative_ui_demo.py
 - `providers/`: LLM provider implementations (Claude, OpenAI)
   - Each provider implements streaming, tool calling, context management
 - `skills/`: Skill loader and registry for loading SKILL.md files with tool definitions
+- `testing/`: ComponentTester framework for isolated UI testing (Storybook-style for TUIs)
+  - `component_tester.py`: Main testing class that renders components via headless TUI
+  - `snapshot.py`: ANSISnapshotter for regression testing with baseline comparison
+  - `assertions.py`: ANSIAsserter with CharmDark theme-specific color assertions
 
 **Key Design Patterns:**
 - Bridge manages all stdio communication - never write to TUI stdin/stdout directly
@@ -93,10 +108,13 @@ uv run python examples/generative_ui_demo.py
 ### Go Side (`cmd/agentui/`, `internal/`)
 
 **Core Components:**
-- `cmd/agentui/main.go`: Entry point, CLI argument parsing
+- `cmd/agentui/main.go`: Entry point, CLI argument parsing, headless mode implementation
+  - `--headless` flag enables non-interactive rendering for automated testing
+  - Headless mode: reads JSON from stdin → renders → outputs ANSI to stdout → exits
 - `internal/app/app.go`: Main Bubbletea model (Elm architecture)
 - `internal/protocol/`: JSON protocol reading/writing, message dispatch
 - `internal/ui/views/`: UI component renderers (forms, tables, chat, progress)
+  - `code_view.go`: Syntax highlighting with Chroma v2 (8x size increase proves ANSI codes work)
 - `internal/theme/`: Theme system with Charm aesthetic (CharmDark/CharmLight/CharmAuto as default)
 
 **Key Design Patterns:**
@@ -143,12 +161,36 @@ User Input → Bubbletea Update → protocol.writer → JSON → bridge.events()
 2. Tool handler should be async and return dict or UI primitive
 3. Register in core or expose via decorator pattern
 
+### Testing UI Components with ComponentTester
+
+1. Create test in `tests/test_component_tester.py` or new test file
+2. Initialize ComponentTester with desired theme: `tester = ComponentTester(theme="charm-dark")`
+3. Render component: `result = tester.render_code("python", "def hello(): pass")`
+4. Add assertions:
+   - Basic: `assert result.success` and `assert result.has_ansi_codes()`
+   - Colors: `asserter.assert_has_pink_keywords(result.output)` (CharmDark theme)
+   - Content: `asserter.assert_contains_text(result.output, "hello")`
+5. Optional: Create snapshot baseline: `snapshotter.save_baseline("test-name", result.output)`
+6. Run tests: `uv run pytest tests/test_component_tester.py -v`
+
+**Headless mode troubleshooting:**
+- If tests fail with "could not open TTY": Rebuild with `make build-tui`
+- Headless mode was added in commit a66aa94
+- Test headless directly: `echo '{"type":"code",...}' | ./bin/agentui-tui --headless`
+
 ## Testing Strategy
 
-- Python: pytest with async support (`pytest-asyncio`)
-- Go: standard `go test` with table-driven tests
-- Integration: Run examples/ scripts that exercise full Python↔Go flow
-- Protocol: Test message serialization/deserialization independently
+- **Python**: pytest with async support (`pytest-asyncio`)
+- **Go**: standard `go test` with table-driven tests
+- **ComponentTester**: Isolated UI component testing (like Storybook for TUIs)
+  - Test components without full app or LLM integration
+  - Uses headless mode for automated rendering
+  - Snapshot testing with ANSISnapshotter for regression detection
+  - Color/style assertions with ANSIAsserter (CharmDark theme verification)
+  - See `docs/COMPONENT_TESTING.md` for full API reference
+- **Integration**: Run examples/ scripts that exercise full Python↔Go flow
+- **Protocol**: Test message serialization/deserialization independently
+- **Syntax highlighting**: Verified via 8x output size increase (92→737 bytes with ANSI codes)
 
 ## Environment Variables
 
@@ -208,3 +250,48 @@ CharmTeal   = "35"        // ANSI 35 (~#00af5f)
 - Users create themes via JSON in `themes/` directory
 
 **For Implementation Plans**: See `docs/plans/README.md` - only follow the ACTIVE plan.
+
+---
+
+## Current Implementation Status
+
+### ✅ Completed Features
+
+- **Core Framework**: Two-process Python/Go architecture with JSON Lines protocol
+- **LLM Providers**: Claude (Anthropic), OpenAI, Gemini support
+- **Theme System**: CharmDark (default), CharmLight, CharmAuto with Charm aesthetic
+- **Syntax Highlighting**: Chroma v2 integration with verified 8x ANSI output increase
+- **UI Primitives**: UICode, UITable, UIProgress, UIForm, UIConfirm
+- **ComponentTester Framework** (commit 3496340, a66aa94):
+  - Isolated component testing without full app
+  - Headless mode (`--headless` flag) for automated testing
+  - ANSISnapshotter for snapshot regression testing
+  - ANSIAsserter with CharmDark theme color verification
+  - All 12 tests passing (0.24s execution time)
+  - Complete documentation in `docs/COMPONENT_TESTING.md`
+- **Skills System**: SKILL.md loader with tool definitions
+- **Bridge Patterns**: TUIBridge (Go subprocess) and CLIBridge (Rich fallback)
+
+### 📚 Documentation
+
+- `CLAUDE.md` - Project instructions for Claude Code (this file)
+- `docs/COMPONENT_TESTING.md` - ComponentTester API reference (600+ lines)
+- `docs/STORYBOOK_ASSISTANT_EXPANSION.md` - Future plugin integration design (1,000+ lines)
+- `COMPONENT_TESTER_SUMMARY.md` - Implementation summary with status
+- `SYNTAX_HIGHLIGHTING_VERIFIED.md` - Syntax highlighting proof
+
+### 🚧 In Development
+
+- CI/CD integration for ComponentTester tests
+- Additional snapshot baselines for regression testing
+- Production examples and demos
+
+### 📋 Future Enhancements (Documented, Not Implemented)
+
+- Storybook Assistant plugin integration (see `docs/STORYBOOK_ASSISTANT_EXPANSION.md`)
+- Terminal testing agent with `/test-tui-component` command
+- Interactive testing wizards
+- Cross-theme testing matrix
+- Visual regression HTML reports
+
+**When working on this project**: Always check implementation status above before proposing changes. Prefer extending existing patterns over creating new ones.
