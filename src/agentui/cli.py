@@ -76,8 +76,8 @@ system_prompt: |
   Be concise and friendly.
 
 ui:
-  theme: catppuccin-mocha
-  
+  theme: charm-dark
+
   welcome:
     title: "Welcome to {name.replace('-', ' ').title()}"
     subtitle: "How can I help you today?"
@@ -203,17 +203,20 @@ def cmd_quick(args):
 def cmd_themes(args):
     """List available themes."""
     themes = [
-        ("catppuccin-mocha", "Soothing dark with purple accents (default)"),
+        ("charm-dark", "Charm signature pink/purple/teal on dark (default)"),
+        ("charm-light", "Charm light mode with purple accents"),
+        ("charm-auto", "Auto-detect terminal background"),
+        ("catppuccin-mocha", "Soothing dark with purple accents"),
         ("catppuccin-latte", "Light mode with soft colors"),
         ("dracula", "Classic dark theme"),
         ("nord", "Arctic, bluish colors"),
         ("tokyo-night", "Vibrant dark theme"),
     ]
-    
+
     print("Available themes:")
     print()
     for name, desc in themes:
-        marker = "→" if name == "catppuccin-mocha" else " "
+        marker = "→" if name == "charm-dark" else " "
         print(f"  {marker} {name:<20} {desc}")
 
 
@@ -236,7 +239,7 @@ def main():
     run_parser.add_argument("path", help="Path to app directory or app.yaml")
     run_parser.add_argument("--provider", "-p", help="Override LLM provider")
     run_parser.add_argument("--model", "-m", help="Override model")
-    run_parser.add_argument("--theme", "-t", default="catppuccin-mocha", help="UI theme")
+    run_parser.add_argument("--theme", "-t", default="charm-dark", help="UI theme")
     run_parser.set_defaults(func=cmd_run)
     
     # init command

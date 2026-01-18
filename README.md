@@ -36,14 +36,22 @@ AgentUI combines the beauty of [Charm](https://charm.sh/) terminal UIs with the 
 ## 🚀 Quick Start
 
 ```bash
-# Install
-pip install agentui
+# Clone the repository
+git clone https://github.com/flight505/agentui
+cd agentui
+
+# Install dependencies
+uv sync
+
+# Build the TUI binary
+make build-tui
 
 # Create a new app
-agentui init my-agent
+uv run python -m agentui.cli init my-agent
 
 # Run it
-cd my-agent && agentui run
+cd my-agent
+uv run python main.py
 ```
 
 ### Simple Agent
@@ -75,15 +83,22 @@ asyncio.run(app.run())
 
 ## 🎨 Themes
 
-Built-in themes:
-- `catppuccin-mocha` (default) — Soothing dark purples
+Built-in themes with Charm aesthetic:
+- `charm-dark` (default) — Signature pink/purple/teal on dark
+- `charm-light` — Light mode with purple accents
+- `charm-auto` — Auto-detect terminal background
+- `catppuccin-mocha` — Soothing dark purples
 - `catppuccin-latte` — Light mode
 - `dracula` — Classic dark
 - `nord` — Arctic blues
 - `tokyo-night` — Vibrant dark
 
 ```bash
-agentui run --theme dracula
+# List all themes
+uv run python -m agentui.cli themes
+
+# Use a specific theme
+uv run python -m agentui.cli run . --theme charm-light
 ```
 
 ## 🎭 Generative UI
@@ -135,44 +150,80 @@ my-agent/
 git clone https://github.com/flight505/agentui
 cd agentui
 
-# Install Python deps
-pip install -e ".[dev]"
+# Install Python dependencies
+uv sync
 
 # Build Go TUI
 make build-tui
 
-# Run demo
-make demo
+# Run examples
+uv run python examples/simple_agent.py
+uv run python examples/generative_ui_demo.py
+```
+
+### Testing
+
+```bash
+# Run all tests
+uv run pytest tests/ -v
+
+# Run ComponentTester tests (UI component testing)
+uv run pytest tests/test_component_tester.py -v
+
+# Test headless mode
+echo '{"type":"code","payload":{"language":"python","code":"def hello(): pass","title":"Test"}}' | \
+  ./bin/agentui-tui --headless --theme charm-dark
 ```
 
 ### Building from Source
 
 ```bash
-# Build everything
-make build
+# Build TUI binary
+make build-tui
 
 # Build for all platforms
 make build-all-platforms
 
-# Run tests
-make test
+# Run Go tests
+make test-go
+
+# Run Python tests
+uv run pytest tests/ -v
 ```
 
 ## 📚 Documentation
 
-- [Design Document](./DESIGN.md) — Architecture deep-dive
-- [Protocol Spec](./docs/protocol.md) — JSON protocol reference
-- [Theme Guide](./docs/themes.md) — Creating custom themes
+- **[CLAUDE.md](./CLAUDE.md)** — Project instructions for Claude Code (architecture, workflows, constraints)
+- **[Component Testing](./docs/COMPONENT_TESTING.md)** — ComponentTester API reference for UI testing
+- **[Storybook Expansion](./docs/STORYBOOK_ASSISTANT_EXPANSION.md)** — Future plugin integration design
+
+### Status & Verification
+- [Component Tester Summary](./COMPONENT_TESTER_SUMMARY.md) — Implementation status
+- [Syntax Highlighting Verified](./SYNTAX_HIGHLIGHTING_VERIFIED.md) — Chroma v2 proof
 
 ## 🗺️ Roadmap
 
-- [x] Protocol design
-- [x] Go TUI scaffold
-- [x] Python bridge
-- [x] Theme system
-- [ ] Full TUI components
-- [ ] More providers
-- [ ] MCP integration
+### ✅ Completed
+- [x] Protocol design (JSON Lines communication)
+- [x] Go TUI with Bubbletea + Charm libraries
+- [x] Python bridge (TUIBridge + CLIBridge fallback)
+- [x] Theme system (CharmDark, CharmLight, CharmAuto + community themes)
+- [x] Syntax highlighting (Chroma v2 with verified ANSI output)
+- [x] ComponentTester framework (Storybook-style testing for TUIs)
+- [x] Headless mode for automated testing
+- [x] LLM providers (Claude, OpenAI, Gemini)
+- [x] UI primitives (Code, Table, Progress, Form, Confirm)
+- [x] Skills system
+
+### 🚧 In Progress
+- [ ] CI/CD integration for component tests
+- [ ] Production examples and demos
+- [ ] Package distribution (PyPI)
+
+### 📋 Planned
+- [ ] MCP (Model Context Protocol) integration
+- [ ] Storybook Assistant plugin expansion
+- [ ] Terminal testing agent
 - [ ] Plugin marketplace
 
 ## 🤝 Contributing
