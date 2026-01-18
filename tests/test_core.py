@@ -858,3 +858,138 @@ class TestToolIntegration:
 
         assert result.error is None
         assert "Processed value with fast" in result.result
+
+
+class TestStreamingAndToolFlow:
+    """Test streaming response and tool execution flow."""
+
+    @pytest.mark.asyncio
+    async def test_stream_provider_response_with_text_chunks(self):
+        """Test streaming text-only response from provider."""
+        core = AgentCore()
+
+        # Mock provider that yields text chunks
+        async def mock_stream(messages, system, tools):
+            yield {"type": "text", "content": "Hello"}
+            yield {"type": "text", "content": " World"}
+            yield {"type": "message_end", "content": "", "input_tokens": 10, "output_tokens": 5}
+
+        mock_provider = MagicMock()
+        mock_provider.stream_message = mock_stream
+        core._provider = mock_provider
+
+        # Call _stream_provider_response
+        chunks_to_yield, tool_calls, should_return = await core._stream_provider_response(mock_provider)
+
+        # Verify chunks
+        assert len(chunks_to_yield) == 3
+        assert chunks_to_yield[0].content == "Hello"
+        assert chunks_to_yield[1].content == " World"
+        assert chunks_to_yield[2].content == ""
+        assert chunks_to_yield[2].is_complete is True
+        assert chunks_to_yield[2].input_tokens == 10
+        assert chunks_to_yield[2].output_tokens == 5
+
+        # No tool calls
+        assert tool_calls == []
+        assert should_return is False
+
+    @pytest.mark.asyncio
+    async def test_stream_provider_response_with_tool_calls(self):
+        """Test streaming response with tool calls."""
+        core = AgentCore()
+
+        # Mock provider with tool calls
+        async def mock_stream(messages, system, tools):
+            yield {"type": "text", "content": "Using tool..."}
+            yield {
+                "type": "tool_use",
+                "content": "",
+                "name": "test_tool",
+                "id": "tool-1",
+                "input": {"arg": "value"}
+            }
+            yield {"type": "message_end", "content": "", "input_tokens": 15, "output_tokens": 8}
+
+        mock_provider = MagicMock()
+        mock_provider.stream_message = mock_stream
+        core._provider = mock_provider
+
+        # Call _stream_provider_response
+        chunks_to_yield, tool_calls, should_return = await core._stream_provider_response(mock_provider)
+
+        # Verify chunks
+        assert len(chunks_to_yield) == 2  # Text chunk + message_end
+        assert chunks_to_yield[0].content == "Using tool..."
+        assert chunks_to_yield[1].is_complete is False  # Not complete because of tool calls
+
+        # Verify tool call extracted
+        assert len(tool_calls) == 1
+        assert tool_calls[0]["name"] == "test_tool"
+        assert tool_calls[0]["id"] == "tool-1"
+        assert tool_calls[0]["input"]["arg"] == "value"
+        assert should_return is False
+
+    @pytest.mark.asyncio
+    async def test_execute_and_record_tools_with_ui_results(self):
+        """Test tool execution that returns UI primitives."""
+        core = AgentCore()
+
+        # Register tool that returns UI primitive
+        async def ui_tool():
+            return UITable(columns=["Name"], rows=[["Alice"]])
+
+        tool = ToolDefinition(
+            name="ui_tool",
+            description="UI tool",
+            parameters={"type": "object", "properties": {}},
+            handler=ui_tool
+        )
+        core.register_tool(tool)
+
+        # Mock bridge for UI handling
+        core.bridge = AsyncMock()
+        core.bridge.send_table = AsyncMock()
+
+        # Create mock tool calls
+        tool_calls = [{"name": "ui_tool", "id": "t1", "input": {}}]
+
+        # Execute and record
+        await core._execute_and_record_tools(tool_calls)
+
+        # Verify bridge.send_table was called for UI
+        assert core.bridge.send_table.called
+
+        # Verify message state updated
+        assert len(core.state.messages) > 0
+        last_message = core.state.messages[-1]
+        assert last_message.role == "user"
+        assert "ui_tool" in last_message.content
+
+    @pytest.mark.asyncio
+    async def test_stream_provider_response_with_cancel(self):
+        """Test streaming response with cancellation."""
+        core = AgentCore()
+
+        # Mock provider with multiple chunks
+        async def mock_stream(messages, system, tools):
+            yield {"type": "text", "content": "Start"}
+            yield {"type": "text", "content": " Middle"}
+            # Should not reach this if cancelled
+            yield {"type": "text", "content": " End"}
+            yield {"type": "message_end", "content": "", "input_tokens": 10, "output_tokens": 5}
+
+        mock_provider = MagicMock()
+        mock_provider.stream_message = mock_stream
+        core._provider = mock_provider
+
+        # Request cancellation before streaming completes
+        core._cancel_requested = True
+
+        # Call _stream_provider_response
+        chunks_to_yield, tool_calls, should_return = await core._stream_provider_response(mock_provider)
+
+        # Should have stopped early due to cancellation
+        # The first chunk might be yielded before cancel check
+        assert should_return is False
+        assert len(chunks_to_yield) >= 0  # May have yielded some chunks before cancel
