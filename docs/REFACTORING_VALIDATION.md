@@ -237,6 +237,11 @@ All example files present and ready to run:
 - **Professional README** with usage examples
 - **Complete API documentation** in Google style
 
+### UI & Rendering
+- **Syntax highlighting verified** with Chroma v2 (8x ANSI output increase: 92→737 bytes)
+- **CharmDark theme** with signature pink/purple/teal colors
+- **Headless mode** for automated component testing
+
 ## Conclusion
 
 The AgentUI codebase has been successfully transformed into a professional, production-ready state. The refactoring achieved:

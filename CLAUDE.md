@@ -275,10 +275,13 @@ CharmTeal   = "35"        // ANSI 35 (~#00af5f)
 ### 📚 Documentation
 
 - `CLAUDE.md` - Project instructions for Claude Code (this file)
-- `docs/COMPONENT_TESTING.md` - ComponentTester API reference (600+ lines)
-- `docs/STORYBOOK_ASSISTANT_EXPANSION.md` - Future plugin integration design (1,000+ lines)
-- `COMPONENT_TESTER_SUMMARY.md` - Implementation summary with status
-- `SYNTAX_HIGHLIGHTING_VERIFIED.md` - Syntax highlighting proof
+- `README.md` - User-facing documentation and quick start
+- `CONTRIBUTING.md` - Contribution guidelines
+- `docs/GENERATIVE_UI_VISION.md` - Generative UI vision and architecture
+- `docs/COMPONENT_TESTING.md` - ComponentTester API reference
+- `docs/SKILLS.md` - Skills system documentation
+- `docs/REFACTORING_VALIDATION.md` - Quality validation report
+- `themes/README.md` - Theme creation guide
 
 ### 🚧 In Development
 
@@ -286,12 +289,12 @@ CharmTeal   = "35"        // ANSI 35 (~#00af5f)
 - Additional snapshot baselines for regression testing
 - Production examples and demos
 
-### 📋 Future Enhancements (Documented, Not Implemented)
+### 📋 Future Enhancements
 
-- Storybook Assistant plugin integration (see `docs/STORYBOOK_ASSISTANT_EXPANSION.md`)
 - Terminal testing agent with `/test-tui-component` command
 - Interactive testing wizards
 - Cross-theme testing matrix
 - Visual regression HTML reports
+- Plugin integration for component testing workflows
 
 **When working on this project**: Always check implementation status above before proposing changes. Prefer extending existing patterns over creating new ones.

@@ -614,7 +614,7 @@ See these files for complete examples:
 
 - `tests/test_component_tester.py` - Comprehensive test suite
 - `examples/test_syntax_visual.py` - Visual testing demo
-- `docs/STORYBOOK_ASSISTANT_EXPANSION.md` - Future plugin design
+- `docs/GENERATIVE_UI_VISION.md` - Framework vision and architecture
 
 ---
 
@@ -675,9 +675,8 @@ class ANSIAsserter:
 
 ## Next Steps
 
-- Read [STORYBOOK_ASSISTANT_EXPANSION.md](./STORYBOOK_ASSISTANT_EXPANSION.md) for plugin integration plans
-- See [TESTING_LLM.md](./TESTING_LLM.md) for full app testing with real LLM
-- Check [ANIMATIONS.md](./ANIMATIONS.md) for animation testing
+- Read [GENERATIVE_UI_VISION.md](./GENERATIVE_UI_VISION.md) for framework vision and architecture
+- See example applications in `examples/` directory for full integration testing
 
 ---
 

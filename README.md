@@ -195,12 +195,23 @@ Let's trace a simple request through the system:
 git clone https://github.com/flight505/agentui
 cd agentui
 
-# Install dependencies (uses uv for fast Python package management)
-uv sync
+# Install dependencies with LLM providers
+# Option 1: Install all providers (Claude + OpenAI) - Recommended
+uv sync --extra all
+
+# Option 2: Install specific provider only
+uv sync --extra claude   # For Claude/Anthropic
+uv sync --extra openai   # For OpenAI/GPT
 
 # Build the Go TUI binary
 make build-tui
+
+# Set your API key
+export ANTHROPIC_API_KEY="your-key-here"  # For Claude
+export OPENAI_API_KEY="your-key-here"     # For OpenAI (optional)
 ```
+
+**Note**: AgentUI uses optional dependencies for different LLM providers. Choose the provider(s) you need to keep your installation lightweight.
 
 ### Your First Agent
 
@@ -556,20 +567,19 @@ See `themes/README.md` for complete theme documentation.
 
 ## 📚 Documentation
 
-### For Users
-- **This README** — Start here!
-- [Component Testing Guide](./docs/COMPONENT_TESTING.md) — Test your UI components
-- [Theme Documentation](./themes/README.md) — Create custom themes
+### User Guides
+- **This README** — Overview and quick start
+- [Component Testing Guide](./docs/COMPONENT_TESTING.md) — Test UI components in isolation
+- [Skills System](./docs/SKILLS.md) — Create and load agent skills
+- [Theme Guide](./themes/README.md) — Create custom themes
 
-### For Contributors
-- [CLAUDE.md](./CLAUDE.md) — Architecture, workflows, constraints (for Claude Code)
-- [Charm Aesthetic Plan](./docs/plans/2026-01-17-charm-aesthetic-implementation.md) — Theme system design
-- [Storybook Expansion](./docs/STORYBOOK_ASSISTANT_EXPANSION.md) — Future plugin ideas
+### Developer Documentation
+- [CLAUDE.md](./CLAUDE.md) — Architecture, development workflows, and technical constraints
+- [Generative UI Vision](./docs/GENERATIVE_UI_VISION.md) — Framework vision and architecture
+- [CONTRIBUTING.md](./CONTRIBUTING.md) — Contribution guidelines
 
-### Status & Proofs
-- [Component Tester Summary](./COMPONENT_TESTER_SUMMARY.md) — Testing framework status
-- [Syntax Highlighting Proof](./SYNTAX_HIGHLIGHTING_VERIFIED.md) — Chroma v2 verification
-- [Nano Banana Setup](./NANO_BANANA_SETUP.md) — Diagram generation tool
+### Project Status
+- [Refactoring Validation Report](./docs/REFACTORING_VALIDATION.md) — Quality metrics and completion status
 
 ---
 
