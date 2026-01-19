@@ -1,0 +1,19 @@
+{
+  "include": ["src"],
+  "exclude": [
+    "**/__pycache__",
+    "**/.pytest_cache",
+    "**/.mypy_cache"
+  ],
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": false,
+  "pythonVersion": "3.11",
+  "pythonPlatform": "All",
+  "typeCheckingMode": "basic",
+  "stubPath": "typings",
+  "ignore": [
+    "src/agentui/providers/claude.py",
+    "src/agentui/providers/openai.py",
+    "src/agentui/ui/tui.py"
+  ]
+}

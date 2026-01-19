@@ -133,7 +133,7 @@ class CLIRenderer(Renderer):
         for row in primitive.rows:
             if isinstance(row, dict):
                 values = [
-                    str(row.get(c.key if hasattr(c, "key") else c, ""))
+                    str(row.get(getattr(c, "key", c), ""))
                     for c in primitive.columns
                 ]
             else:
