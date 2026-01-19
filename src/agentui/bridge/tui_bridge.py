@@ -7,11 +7,11 @@ import shutil
 import subprocess
 from collections.abc import AsyncIterator, AsyncGenerator
 from contextlib import asynccontextmanager
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
 
 from agentui.bridge.base import BaseBridge
+from agentui.config import TUIConfig
 from agentui.exceptions import BridgeError, ConnectionError, ProtocolError, ValidationError
 from agentui.protocol import (
     Message,
@@ -34,18 +34,6 @@ from agentui.protocol import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class TUIConfig:
-    """Configuration for the TUI."""
-    theme: str = "catppuccin-mocha"
-    app_name: str = "AgentUI"
-    tagline: str = "AI Agent Interface"
-    tui_path: str | None = None
-    debug: bool = False
-    reconnect_attempts: int = 3
-    reconnect_delay: float = 1.0
 
 
 class TUIBridge(BaseBridge):

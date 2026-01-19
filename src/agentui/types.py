@@ -4,16 +4,15 @@ Core types for AgentUI.
 
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
-from enum import Enum
 from typing import Any
 
+# Import configuration classes from dedicated config module
+# Re-exported here for backward compatibility
+from agentui.config import AgentConfig, ProviderType, TUIConfig
 
-class ProviderType(str, Enum):
-    """Supported LLM providers."""
-    CLAUDE = "claude"
-    OPENAI = "openai"
-    GEMINI = "gemini"
-    OLLAMA = "ollama"
+# Make mypy happy with re-exports
+__all__ = ["ProviderType", "AgentConfig", "TUIConfig", "ToolDefinition", "Message",
+           "ToolResult", "AgentState", "StreamChunk", "AppManifest"]
 
 
 @dataclass
@@ -42,28 +41,6 @@ class Message:
     content: str
     tool_calls: list[dict] | None = None
     tool_results: list[dict] | None = None
-
-
-@dataclass
-class AgentConfig:
-    """Configuration for the agent."""
-    # Provider settings
-    provider: ProviderType = ProviderType.CLAUDE
-    model: str | None = None
-    api_key: str | None = None
-    max_tokens: int = 4096
-    temperature: float = 0.7
-
-    # System prompt
-    system_prompt: str = "You are a helpful AI assistant."
-
-    # Tool settings
-    max_tool_iterations: int = 10
-
-    # UI settings
-    theme: str = "catppuccin-mocha"
-    app_name: str = "AgentUI"
-    tagline: str = "AI Agent Interface"
 
 
 @dataclass

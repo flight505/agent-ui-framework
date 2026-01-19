@@ -4,7 +4,8 @@ import logging
 
 from agentui.bridge.base import BaseBridge
 from agentui.bridge.cli_bridge import CLIBridge
-from agentui.bridge.tui_bridge import TUIBridge, TUIConfig, managed_bridge
+from agentui.bridge.tui_bridge import TUIBridge, managed_bridge
+from agentui.config import TUIConfig
 from agentui.exceptions import BridgeError, ConnectionError, ProtocolError
 
 logger = logging.getLogger(__name__)
